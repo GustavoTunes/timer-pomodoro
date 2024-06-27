@@ -4,10 +4,11 @@ let seconds = 0;
 let isPaused = false;
 let enteredTime = null;
 let isStarted = false;
+let currentMode = 'work';
 
 function startTimer() {
     clearInterval(timer);
-    timer = setInterval(updateTimer, 1000);
+    timer = setInterval(updateTimer, 50);
 }
 
 function updateTimer() {
@@ -16,7 +17,7 @@ function updateTimer() {
 
     if (minutes === 0 && seconds === 0) {
         clearInterval(timer);
-        alert('O tempo acabou, faça uma pausa');
+        alert('O tempo acabou');
     } else if (!isPaused) {
         if (seconds > 0) {
             seconds--;
@@ -32,8 +33,8 @@ function formatTime(minutes, seconds) {
 }
 
 function togglePauseResume() {
-    const pauseResumeButton = document.querySelector('.control-buttons button');
-    
+    const pauseResumeButton = document.querySelector('.pause-resume');
+
     if (!isStarted) {
         isStarted = true;
         isPaused = false;
@@ -54,14 +55,7 @@ function togglePauseResume() {
 
 function restartTimer() {
     clearInterval(timer);
-    minutes = enteredTime || 25;
-    seconds = 0;
-    isPaused = false;
-    isStarted = false; // Reinicia a variável isStarted
-    const timerElement = document.getElementById('timer');
-    timerElement.textContent = formatTime(minutes, seconds);
-    const pauseResumeButton = document.querySelector('.control-buttons button');
-    pauseResumeButton.textContent = 'Iniciar';
+    setTimer(currentMode);
 }
 
 function chooseTime() {
@@ -71,15 +65,43 @@ function chooseTime() {
         minutes = enteredTime;
         seconds = 0;
         isPaused = false;
-        isStarted = false; // Reinicia a variável isStarted
+        isStarted = false;
+        currentMode = 'custom';
         const timerElement = document.getElementById('timer');
         timerElement.textContent = formatTime(minutes, seconds);
         clearInterval(timer);
-        const pauseResumeButton = document.querySelector('.control-buttons button');
+        const pauseResumeButton = document.querySelector('.pause-resume');
         pauseResumeButton.textContent = 'Iniciar';
     } else {
         alert('Valor inválido, coloque um número inteiro maior que 0.');
     }
+}
+
+function setTimer(mode) {
+    currentMode = mode;
+    clearInterval(timer);
+    isPaused = false;
+    isStarted = false;
+
+    switch (mode) {
+        case 'work':
+            minutes = 25;
+            break;
+        case 'shortBreak':
+            minutes = 5;
+            break;
+        case 'longBreak':
+            minutes = 15;
+            break;
+        default:
+            minutes = enteredTime || 25;
+    }
+    seconds = 0;
+
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = formatTime(minutes, seconds);
+    const pauseResumeButton = document.querySelector('.pause-resume');
+    pauseResumeButton.textContent = 'Iniciar';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
